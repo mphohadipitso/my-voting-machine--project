@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>South African National Elections - Swipe to Vote</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #007749;
+            --secondary: #001489;
+            --accent: #FFB81C;
+            --dark: #333;
+            --light: #fff;
+            --gray: #f5f5f5;
+            --border: #e0e0e0;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+        }
+
+        body {
+            background: linear-gradient(135deg, #001489, #007749);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: var(--light);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .logo i {
+            font-size: 36px;
+            color: var(--primary);
+        }
+
+        .logo h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .tagline {
+            color: var(--secondary);
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .party-count {
+            background-color: var(--accent);
+            color: var(--dark);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        /* Language Selector */
+        .language-selector {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .lang-btn {
+            padding: 8px 15px;
+            background-color: var(--gray);
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .lang-btn.active {
+            background-color: var(--primary);
+            color: var(--light);
+        }
+
+        /* Voter Registration */
+        .registration-section {
+            background-color: var(--light);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--primary);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+        }
+
+        .section-title i {
+            margin-right: 10px;
+            color: var(--accent);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 119, 73, 0.2);
+        }
+
+        .id-input-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        .id-input-container input {
+            flex: 1;
+        }
+
+        .verify-btn {
+            background-color: var(--primary);
+            color: var(--light);
+            border: none;
+            border-radius: 5px;
+            padding: 0 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .verify-btn:hover {
+            background-color: #005a38;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background-color: var(--secondary);
+            color: var(--light);
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .submit-btn i {
+            margin-right: 10px;
+        }
+
+        .submit-btn:hover {
+            background-color: #001266;
+        }
+
+        .submit-btn:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+
+        /* Voting Section - Swipe Interface */
+        .voting-section {
+            background-color: var(--light);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            display: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .swipe-container {
+            position: relative;
+            height: 500px;
+            overflow: hidden;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .party-card {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            text-align: center;
+            background: var(--light);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.5s ease, opacity 0.5s ease;
+            opacity: 0;
+            transform: translateX(100%);
+        }
+
+        .party-card.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .party-card.previous {
+            transform: translateX(-100%);
+        }
+
+        .party-logo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: var(--light);
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .party-name {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+
+        .party-president {
+            font-size: 20px;
+            color: var(--secondary);
+            margin-bottom: 15px;
+        }
+
+        .party-abbr {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .party-number {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: var(--primary);
+            color: var(--light);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .navigation-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .nav-btn {
+            background-color: var(--primary);
+            color: var(--light);
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-btn:hover {
+            background-color: #005a38;
+        }
+
+        .nav-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .party-progress {
+            flex: 1;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .select-party-btn {
+            background-color: var(--accent);
+            color: var(--dark);
+            border: none;
+            border-radius: 8px;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .select-party-btn:hover {
+            background-color: #e6a500;
+        }
+
+        /* Results Section */
+        .results-section {
+            background-color: var(--light);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            margin-top: 30px;
+            display: none;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .result-card {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .result-logo {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: var(--light);
+            font-weight: bold;
+        }
+
+        .result-info {
+            flex: 1;
+        }
+
+        .result-name {
+            font-weight: 700;
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+
+        .result-votes {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background-color: var(--gray);
+            border-radius: 5px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background-color: var(--primary);
+            border-radius: 5px;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--light);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .contact-info {
+            text-align: left;
+        }
+
+        .contact-info h3 {
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+
+        .copyright {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            color: #666;
+        }
+
+        /* Status Messages */
+        .status-message {
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .status-success {
+            background-color: rgba(40, 167, 69, 0.2);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+
+        .status-error {
+            background-color: rgba(220, 53, 69, 0.2);
+            color: var(--danger);
+            border: 1px solid var(--danger);
+        }
+
+        .status-warning {
+            background-color: rgba(255, 193, 7, 0.2);
+            color: #856404;
+            border: 1px solid var(--warning);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .swipe-container {
+                height: 400px;
+            }
+            
+            .party-logo {
+                width: 100px;
+                height: 100px;
+                font-size: 30px;
+            }
+            
+            .party-name {
+                font-size: 24px;
+            }
+            
+            .party-president {
+                font-size: 18px;
+            }
+            
+            .nav-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+            
+            .footer-content {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            
+            .contact-info {
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .swipe-container {
+                height: 350px;
+            }
+            
+            .party-logo {
+                width: 80px;
+                height: 80px;
+                font-size: 24px;
+            }
+            
+            .party-name {
+                font-size: 20px;
+            }
+            
+            .party-president {
+                font-size: 16px;
+            }
+            
+            .navigation-controls {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .nav-btn {
+                width: 45px;
+                height: 45px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="logo">
+                <i class="fas fa-vote-yea"></i>
+                <h1>South African National Elections</h1>
+            </div>
+            <p class="tagline">Exercise your democratic right - Vote for your future</p>
+            <div class="party-count">383 Registered National Parties</div>
+            
+            <div class="language-selector">
+                <button class="lang-btn active" data-lang="en">English</button>
+                <button class="lang-btn" data-lang="zu">isiZulu</button>
+                <button class="lang-btn" data-lang="xh">isiXhosa</button>
+                <button class="lang-btn" data-lang="af">Afrikaans</button>
+                <button class="lang-btn" data-lang="st">Sesotho</button>
+                <button class="lang-btn" data-lang="tn">Setswana</button>
+                <button class="lang-btn" data-lang="ts">Xitsonga</button>
+            </div>
+        </header>
+
+        <!-- Voter Registration Section -->
+        <section class="registration-section" id="registrationSection">
+            <h2 class="section-title">
+                <i class="fas fa-user-check"></i>
+                Voter Registration
+            </h2>
+            
+            <div class="form-group">
+                <label for="fullName">Full Name</label>
+                <input type="text" id="fullName" placeholder="Enter your full name">
+            </div>
+            
+            <div class="form-group">
+                <label for="idNumber">South African ID Number (13 digits)</label>
+                <div class="id-input-container">
+                    <input type="text" id="idNumber" placeholder="Enter your 13-digit ID" maxlength="13">
+                    <button class="verify-btn" id="verifyBtn">Verify</button>
+                </div>
+                <div id="idStatus" class="status-message"></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="province">Province</label>
+                <select id="province">
+                    <option value="">Select your province</option>
+                    <option value="EC">Eastern Cape</option>
+                    <option value="FS">Free State</option>
+                    <option value="GP">Gauteng</option>
+                    <option value="KZN">KwaZulu-Natal</option>
+                    <option value="LP">Limpopo</option>
+                    <option value="MP">Mpumalanga</option>
+                    <option value="NC">Northern Cape</option>
+                    <option value="NW">North West</option>
+                    <option value="WC">Western Cape</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" placeholder="Enter your email address">
+            </div>
+            
+            <button class="submit-btn" id="registerBtn" disabled>
+                <i class="fas fa-check-circle"></i> Register to Vote
+            </button>
+        </section>
+        
+        <!-- Voting Section - Swipe Interface -->
+        <section class="voting-section" id="votingSection">
+            <h2 class="section-title">
+                <i class="fas fa-ballot"></i>
+                Cast Your Vote
+            </h2>
+            <p>Swipe left or right to browse all 383 parties. Tap "Select This Party" to vote.</p>
+            
+            <div class="swipe-container" id="swipeContainer">
+                <!-- Party cards will be dynamically added here -->
+            </div>
+            
+            <div class="navigation-controls">
+                <button class="nav-btn" id="prevBtn">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                
+                <div class="party-progress" id="partyProgress">
+                    Party 1 of 383
+                </div>
+                
+                <button class="nav-btn" id="nextBtn">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+            
+            <button class="select-party-btn" id="selectPartyBtn">
+                <i class="fas fa-check"></i> Select This Party
+            </button>
+        </section>
+        
+        <!-- Results Section -->
+        <section class="results-section" id="resultsSection">
+            <h2 class="section-title">
+                <i class="fas fa-chart-bar"></i>
+                Election Results
+            </h2>
+            <p>Current voting results (updated in real-time):</p>
+            
+            <div class="results-grid" id="resultsGrid">
+                <!-- Results will be dynamically added here -->
+            </div>
+        </section>
+        
+        <!-- Footer -->
+        <footer>
+            <div class="footer-content">
+                <div class="contact-info">
+                    <h3>Independent Electoral Commission</h3>
+                    <p>Email: info@elections.org.za | Phone: 0800 11 8000</p>
+                    <p>Address: Election House, Riverside Office Park, 1303 Heuwel Avenue, Centurion</p>
+                </div>
+                <div class="security-notice">
+                    <i class="fas fa-shield-alt"></i>
+                    <p>This is a secure voting system. Your vote is confidential.</p>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2029 South African National Elections. All rights reserved.
+                    <br>
+                This project is made by <strong>Mphohadi Pitso</strong>
+                </p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Language translations for all 11 official South African languages
+        const translations = {
+            en: {
+                title: "South African National Elections",
+                tagline: "Exercise your democratic right - Vote for your future",
+                registration: "Voter Registration",
+                fullName: "Full Name",
+                idNumber: "South African ID Number (13 digits)",
+                province: "Province",
+                email: "Email Address",
+                register: "Register to Vote",
+                verify: "Verify",
+                voting: "Cast Your Vote",
+                selectParty: "Swipe left or right to browse all 383 parties. Tap 'Select This Party' to vote.",
+                castVote: "Cast Your Vote",
+                results: "Election Results",
+                currentResults: "Current voting results (updated in real-time):",
+                contact: "Independent Electoral Commission",
+                security: "This is a secure voting system. Your vote is confidential.",
+                copyright: "© 2023 South African National Elections. All rights reserved.",
+                idValid: "ID is valid. You are eligible to vote.",
+                idInvalid: "Invalid ID number. Please check and try again.",
+                idUnderage: "You must be 18 years or older to vote.",
+                voteSuccess: "Your vote has been successfully cast!",
+                voteError: "Please select a party to vote for.",
+                emailSent: "Vote confirmation sent to your email.",
+                partyProgress: "Party {current} of {total}",
+                selectParty: "Select This Party"
+            },
+            zu: {
+                title: "Okhetho Lwezwe laseNingizimu Afrika",
+                tagline: "Sebenzisa ilungelo lakho lentando yeningi - Votela ikusasa lakho",
+                registration: "Ukubhalisa Kovoti",
+                fullName: "Igama Eliphelele",
+                idNumber: "Inombolo Yesazisi saseNingizimu Afrika (imibala eyi-13)",
+                province: "Isifundazwe",
+                email: "Ikheli Le-imeyili",
+                register: "Bhalisa Ukuvota",
+                verify: "Qinisekisa",
+                voting: "Phonsa Ivoti Lakho",
+                selectParty: "Swayipha ngakwesokunye noma ngakwesokudla ukuze ubuke wonke amaqembu angama-383. Thepha u-'Khetha Leli Qembu' ukuze uvote.",
+                castVote: "Phonsa Ivoti Lakho",
+                results: "Imiphumela Yokhetho",
+                currentResults: "Imiphumela yamanje yokuvota (ibuyekezwe ngesikhathi sangempela):",
+                contact: "I-Commission Enezimele Yokhetho",
+                security: "Lolu hlelo lokuvota oluphephile. Ivoti lakho liyimfihlo.",
+                copyright: "© 2023 Okhetho Lwezwe laseNingizimu Afrika. Wonke amalungelo agodliwe.",
+                idValid: "Isazisi sivumelekile. Ungakwazi ukuvota.",
+                idInvalid: "Inombolo yesazisi engavumelekile. Sicela uhlole futhi uzame futhi.",
+                idUnderage: "Kufanele ube neminyaka engu-18 nangaphezulu ukuze uvote.",
+                voteSuccess: "Ivoti lakho liphonswe ngempumelelo!",
+                voteError: "Sicela ukhethe iqembu ongalivotela.",
+                emailSent: "Ukuqinisekiswa kwevoti kuthunyelwe kwi-imeyili yakho.",
+                partyProgress: "Iqembu {current} kwezingama-{total}",
+                selectParty: "Khetha Leli Qembu"
+            },
+            xh: {
+                title: "Unyulo Wezwe laseMzantsi Afrika",
+                tagline: "Sebenzisa ilungelo lakho lentando yeningi - Votela ikamva lakho",
+                registration: "Ukubhalisa Kuvoti",
+                fullName: "Igama Elipheleleyo",
+                idNumber: "Inombolo ye-ID yaseMzantsi Afrika (iidijithi ezi-13)",
+                province: "iPhondo",
+                email: "Idilesi ye-imeyile",
+                register: "Bhalisa ukuvota",
+                verify: "Qinisekisa",
+                voting: "Vota",
+                selectParty: "Swayipha ngasekunene okanye ngasekhohlo ukuze ujonge zonke iiqela ezingama-383. Cofa u-'Khetha Eli Qela' ukuze uvote.",
+                castVote: "Vota",
+                results: "Iziphumo zoVoto",
+                currentResults: "Iziphumo zokuvota zangoku (zihlaziywe ngexesha langoku):",
+                contact: "IKhomishoni yeNtlanga yoVoto eZimeleyo",
+                security: "Eli luhlu lokuvota olukhuselekileyo. Ivoti lakho liyimfihlo.",
+                copyright: "© 2023 Unyulo Wezwe laseMzantsi Afrika. Onke amalungelo agciniwe.",
+                idValid: "I-ID ivumelekile. Ungakwazi ukuvota.",
+                idInvalid: "Inombolo ye-ID engasebenziyo. Nceda khangela kwaye uzame kwakhona.",
+                idUnderage: "Kufuneka ube neminyaka eyi-18 okanye ngaphezulu ukuze uvote.",
+                voteSuccess: "Ivoti lakho lenziwe ngempumelelo!",
+                voteError: "Nceda khetha iqela lokuba ulivotele.",
+                emailSent: "Isiqinisekiso sovoto sithunyelwe kwi-imeyile yakho.",
+                partyProgress: "Iqela {current} kwezingama-{total}",
+                selectParty: "Khetha Eli Qela"
+            },
+            af: {
+                title: "Suid-Afrikaanse Nasionale Verkiesings",
+                tagline: "Beweeg jou demokratiese reg - Stem vir jou toekoms",
+                registration: "Kieserregistrasie",
+                fullName: "Volle Naam",
+                idNumber: "Suid-Afrikaanse ID-nommer (13 syfers)",
+                province: "Provinsie",
+                email: "E-posadres",
+                register: "Registreer om te Stem",
+                verify: "Verifieer",
+                voting: "Bring Jou Stem Uit",
+                selectParty: "Swaai links of regs om deur al 383 partye te blaai. Tik 'Kies Hierdie Party' om te stem.",
+                castVote: "Bring Jou Stem Uit",
+                results: "Verkiesingsuitslae",
+                currentResults: "Huidige stemresultate (intyds opgedateer):",
+                contact: "Onafhanklike Verkiesingskommissie",
+                security: "Hierdie is 'n veilige stemmingstelsel. Jou stem is vertroulik.",
+                copyright: "© 2023 Suid-Afrikaanse Nasionale Verkiesings. Alle regte voorbehou.",
+                idValid: "ID is geldig. Jy is kwalifiseer om te stem.",
+                idInvalid: "Ongeldige ID-nommer. Gaan dit na en probeer weer.",
+                idUnderage: "Jy moet 18 jaar of ouer wees om te stem.",
+                voteSuccess: "Jou stem is suksesvol uitgebring!",
+                voteError: "Kies 'n party om voor te stem.",
+                emailSent: "Stembevestiging na jou e-pos gestuur.",
+                partyProgress: "Party {current} van {total}",
+                selectParty: "Kies Hierdie Party"
+            },
+            st: {
+                title: "Khetho ya Naha ya Afrika Borwa",
+                tagline: "Sebelisa tokelo ya gago ya temokrasi - Voutela bokamoso ba gago",
+                registration: "Ngodiso ya Movouti",
+                fullName: "Leina ka Botlalo",
+                idNumber: "Nomoro ya ID ya Afrika Borwa (dijiti tše 13)",
+                province: "Profense",
+                email: "Atrese ya Imeile",
+                register: "Ngodisa go Vouta",
+                verify: "Netefatša",
+                voting: "Neela Voutu ya Gago",
+                selectParty: "Swayipha go la go le letšatši goba go le letona go ela dintlha tše 383 tšohle. Tlanya 'Kgetha Patsi Ye' go vouta.",
+                castVote: "Neela Voutu ya Gago",
+                results: "Diphetho tša Khetho",
+                currentResults: "Diphetho tša bjale tša go vouta (di ntlafaditšwe ka nako ya go swana):",
+                contact: "Komiti ya Khetho e Ikgethile",
+                security: "Ye ke tshepedišo ya go vouta e bolokegilego. Voutu ya gago ke ya sephiri.",
+                copyright: "© 2023 Khetho ya Naha ya Afrika Borwa. Ditokelo tšohle di bolokilwe.",
+                idValid: "ID e šomile. O kgona go vouta.",
+                idInvalid: "Nomoro ya ID e fošagetšego. Hle e hlodiše gape o leke gape.",
+                idUnderage: "O swanetše go ba le mengwaga ye 18 go feta go vouta.",
+                voteSuccess: "Voutu ya gago e filwe ka katlego!",
+                voteError: "Hle kgetha patsi go voutela yona.",
+                emailSent: "Tiišetšo ya voutu e rometšwe go imeile ya gago.",
+                partyProgress: "Patsi {current} ya {total}",
+                selectParty: "Kgetha Patsi Ye"
+            },
+            tn: {
+                title: "Dikgetho tsa Bosetšhaba tsa Aforika Borwa",
+                tagline: "Dirisa ditokelo tsa gago tsa temokerasi - Kgetha bokamoso jwa gago",
+                registration: "Ngwadisiso ya Mokgethi",
+                fullName: "Leina ka Bophara",
+                idNumber: "Nomoro ya ID ya Aforika Borwa (dijiti di le 13)",
+                province: "Porofense",
+                email: "Aterese ya Imeile",
+                register: "Ngwadisa go Kgetha",
+                verify: "Netefatsa",
+                voting: "Neela Kgetho ya Gago",
+                selectParty: "Swayipha kwa left kana kwa right go batla dintlha tsotlhe tse di 383. Tlanya 'Kgetha Patsi E' go kgetha.",
+                castVote: "Neela Kgetho ya Gago",
+                results: "Dipholo tsa Dikgetho",
+                currentResults: "Dipholo tsa jaana tsa go kgetha (di ntlafaditswe ka nako ya boammaaruri):",
+                contact: "Khomishene e e Ikgethang ya Dikgetho",
+                security: "Ye ke tsamaiso e e sireletsegileng ya go kgetha. Kgetho ya gago ke ya sephiri.",
+                copyright: "© 2023 Dikgetho tsa Bosetšhaba tsa Aforika Borwa. Ditokelo tsotlhe di bolokilwe.",
+                idValid: "ID e siame. O ka kgona go kgetha.",
+                idInvalid: "Nomoro ya ID e e fosagetseng. Tsweetswee e sekaseke mme o leke gape.",
+                idUnderage: "O tshwanetse go ba le dingwaga di le 18 go feta go kgetha.",
+                voteSuccess: "Kgetho ya gago e neilwe ka katlego!",
+                voteError: "Tsweetswee kgetha patsi go e kgetha.",
+                emailSent: "Tlhomamiso ya kgetho e rometswe kwa imeileng ya gago.",
+                partyProgress: "Patsi {current} ya {total}",
+                selectParty: "Kgetha Patsi E"
+            },
+            ts: {
+                title: "Mavhoti ya Rixaka ya Afrika-Dzonga",
+                tagline: "Tirisa fanelo ya wena ya demokirasi - Vhotela ku hisa ka wena",
+                registration: "Ndzhawulo ya Muvhoti",
+                fullName: "Vito ra Ntumbuluko",
+                idNumber: "Nomoro ya ID ya Afrika-Dzonga (tinomoro ta 13)",
+                province: "Porofensi",
+                email: "Åddrese ya Imeyili",
+                register: "Ndzhawula ku Vhotela",
+                verify: "Tiyisisa",
+                voting: "Nyika Vhoto ya Wena",
+                selectParty: "Swayipha exinen' kumbe exidzheni ku kambela swihlanganisi hinkwaswo swa 383. Papeta 'Hlänga Phathi Le' ku vhotela.",
+                castVote: "Nyika Vhoto ya Wena",
+                results: "Mbelembe wa Mavhoti",
+                currentResults: "Mbelembe wa sweswi wa mavhoti (wu antswisiwile hi nkarhi wa xiviri):",
+                contact: "Komixini yo Tiyimela ya Mavhoti",
+                security: "Le yi sisiteme yo hiseka ya mavhoti. Vhoto ra wena i xihundla.",
+                copyright: "© 2023 Mavhoti ya Rixaka ya Afrika-Dzonga. Swifanelo hinkwaswo swa hlayisiwa.",
+                idValid: "ID yi nga riki na xihoxo. U nga vhotela.",
+                idInvalid: "Nomoro ya ID leyi nga riki na vuxokoxoko. Hi kombela u yi lavisisa naswona u ringeta nakambe.",
+                idUnderage: "U fanele ku va u ni malembe ya 18 kumbe ku tlula ku vhotela.",
+                voteSuccess: "Vhoto ra wena ri nyikiwile hi ndlela yo humelela!",
+                voteError: "Hi kombela u hlänge phathi yo yi vhotela.",
+                emailSent: "Xitiviso xa vhoto xi rhumeriwile eka imeyili ya wena.",
+                partyProgress: "Phathi {current} ya {total}",
+                selectParty: "Hlänga Phathi Le"
+            }
+        };
+
+        // Generate 383 political parties with realistic data
+        function generatePoliticalParties() {
+            const parties = [];
+            const partyNames = [
+                "African National Congress", "Democratic Alliance", "Economic Freedom Fighters", 
+                "Inkatha Freedom Party", "Freedom Front Plus", "African Christian Democratic Party",
+                "United Democratic Movement", "Good Party", "Congress of the People", "Pan Africanist Congress",
+                "Al Jama-ah", "African Transformation Movement", "Black First Land First", 
+                "Capitalist Party of South Africa", "Socialist Revolutionary Workers Party",
+                "African People's Convention", "Agang South Africa", "Azanian People's Organisation",
+                "National Freedom Party", "Patriotic Alliance", "United Christian Democratic Party",
+                // More party name bases
+                "African Democratic Change", "African Covenant", "Alliance of Citizens for Change",
+                "Better Residents Association", "Christian Political Movement", "Communist Party of South Africa",
+                "Democratic Liberal Congress", "Economic Emancipation Forum", "Federation of Democrats",
+                "Green Party of South Africa", "Independent Citizens Movement", "Land Party",
+                "National People's Ambassadors", "Organic Humanity Movement", "People's Movement for Change",
+                "Revolutionary Congress", "South African Maintenance and Estate Beneficiaries Association",
+                "Traditional Governance Advocacy", "Ubuntu Party", "Women Forward",
+                "Youth Movement for Change", "Zimbabwe People's Front", "Agricultural People's Union",
+                "Business Unity South Africa", "Civic Association for Reform", "Democratic Independent Party",
+                "Economic Freedom for All", "Forum for Service Delivery", "Government by the People",
+                "Independent South African National Civic Organisation", "Justice and Employment Party",
+                "Keep It Straight and Simple", "Local Government Accountability Party",
+                "Minority Front", "National Conservative Party", "Opposition Alliance",
+                "People's Alliance for Freedom", "Quality of Life for All", "Reformed Independent Party",
+                "South African People's Party", "The Independents", "United Independent Movement",
+                "Voice of the People", "Workers and Socialist Party", "Ximoko Party",
+                "Young Patriots", "Zulu Royal Movement", "African Content Movement",
+                "Boer Party", "Cape Independence Party", "Democratic Left Front",
+                "Economic Emancipation Movement", "Free Democrats", "God Save South Africa",
+                "Independent Democrats", "Kingdom Governance Movement", "Land Access Movement",
+                "National Religious Freedom Party", "One South Africa Movement", "People's Revolutionary Movement",
+                "Referendum Party", "South African National Congress of Traditional Authorities",
+                "The Organic Society", "United Democratic Front", "Vryheidsfront Plus",
+                "Workers International", "Xenophobia Resistance Movement", "Youth for Change",
+                "Zimbabwe Exiles Forum", "African Conservative Party", "Bread Rose Water Party",
+                "Christian Democratic Party", "Democratic Socialist Movement", "Economic Progress Party",
+                "Freedom Movement", "Green Alliance", "Independent Progressive Party",
+                "Kingdom Politics", "Labour Party of South Africa", "National People's Party",
+                "One Nation Party", "People's Trust", "Reformed Party of South Africa",
+                "South African Women's Party", "The Democrats", "United People's Movement",
+                "Women's Rights Party", "X-Cell Party", "Youth Party", "Zulu Cultural Movement"
+            ];
+            
+            const presidentNames = [
+                "Cyril Ramaphosa", "John Steenhuisen", "Julius Malema", "Velenkosini Hlabisa", 
+                "Pieter Groenewald", "Kenneth Meshoe", "Bantu Holomisa", "Patricia de Lille",
+                "Mosiuoa Lekota", "Mzwanele Nyhontso", "Ganief Hendricks", "Vuyo Zungula",
+                "Andile Mngxitama", "Anton van Dalsen", "Irvin Jim", "Themba Godi",
+                "Mike Tshishonga", "Jacob Dikobo", "Zanele kaMagwaza-Msibi", "Gayton McKenzie",
+                "Lucas Mangope", "Mandla Galo", "Mmusi Maimane", "Herman Mashaba",
+                // More president names
+                "Michael Beaumont", "Mbhazima Shilowa", "Bonginkosi Dhlamini", "Khusta Jack",
+                "Yusuf Cassim", "Floyd Shivambu", "Marshall Dlamini", "Nkosazana Dlamini-Zuma",
+                "Zweli Mkhize", "David Mabuza", "Lindiwe Sisulu", "Naledi Pandor",
+                "Pravin Gordhan", "Enoch Godongwana", "Gwede Mantashe", "Fikile Mbalula",
+                "Stella Ndabeni-Abrahams", "Blade Nzimande", "Thulas Nxesi", "Lindiwe Zulu",
+                "Nkosindiphile Xhakaza", "Velenkosi Hlabisa", "Sifiso Mtsweni", "Mandisa Mashiya",
+                "Bheki Hlophe", "Nompumelelo Ntuli", "Sipho Khumalo", "Thandeka Mbanjwa",
+                "Lungelo Zondi", "Nokuthula Bhengu", "Sibusiso Dlamini", "Zanele Nkosi",
+                "Mxolisi Ndlovu", "Noluthando Mthembu", "Sipho Mokoena", "Thulisile Ngcobo",
+                "Bongani Zulu", "Nompilo Mkhize", "Sifiso Nkosi", "Zodwa Mthembu",
+                "Mzwandile Mhlongo", "Nokukhanya Zuma", "Siphiwe Dube", "Thandekile Ndlovu",
+                "Buhle Mkhwanazi", "Nolwazi Zungu", "Sibusiso Cele", "Zanele Zulu",
+                "Mthokozisi Ntuli", "Nompumelelo Mhlongo", "Sipho Zondi", "Thandeka Khumalo"
+            ];
+            
+            const colors = [
+                "#000000", "#001489", "#E31B23", "#008000", "#0038A8", "#FFD700",
+                "#800080", "#FF0000", "#00FF00", "#0000FF", "#FF00FF", "#00FFFF",
+                "#FFA500", "#800000", "#008080", "#FFC0CB", "#A52A2A", "#FF4500",
+                "#DA70D6", "#EEE8AA", "#98FB98", "#AFEEEE", "#DB7093", "#FFEFD5",
+                "#F0FFF0", "#F5F5DC", "#FFF0F5", "#F0F8FF", "#F8F8FF", "#F5F5F5",
+                "#FFF8DC", "#FAEBD7", "#FAF0E6", "#FFF5EE", "#FDF5E6", "#FFE4E1",
+                "#FFE4C4", "#FFDAB9", "#FFEFD5", "#FFEBCD", "#FFE4B5", "#FFDEAD",
+                "#FFFACD", "#FFF8DC", "#FFFFE0", "#FFFFF0", "#FAFAD2", "#FFFAF0"
+            ];
+            
+            // Generate 383 parties
+            for (let i = 1; i <= 383; i++) {
+                const nameBase = partyNames[i % partyNames.length];
+                const president = presidentNames[i % presidentNames.length];
+                const color = colors[i % colors.length];
+                
+                parties.push({
+                    id: i,
+                    name: `${nameBase} ${i > 20 ? `- ${Math.floor(i/10)}` : ''}`,
+                    president: president,
+                    logo: nameBase.substring(0, 3).toUpperCase(),
+                    color: color,
+                    votes: 0,
+                    abbreviation: `${nameBase.split(' ').map(word => word[0]).join('')}${i > 20 ? i : ''}`
+                });
+            }
+            
+            return parties;
+        }
+
+        // Political parties data (383 parties)
+        const politicalParties = generatePoliticalParties();
+
+        // DOM Elements
+        const registrationSection = document.getElementById('registrationSection');
+        const votingSection = document.getElementById('votingSection');
+        const resultsSection = document.getElementById('resultsSection');
+        const swipeContainer = document.getElementById('swipeContainer');
+        const resultsGrid = document.getElementById('resultsGrid');
+        const idNumberInput = document.getElementById('idNumber');
+        const verifyBtn = document.getElementById('verifyBtn');
+        const idStatus = document.getElementById('idStatus');
+        const registerBtn = document.getElementById('registerBtn');
+        const selectPartyBtn = document.getElementById('selectPartyBtn');
+        const langButtons = document.querySelectorAll('.lang-btn');
+        const emailInput = document.getElementById('email');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const partyProgress = document.getElementById('partyProgress');
+
+        // Current language
+        let currentLang = 'en';
+        let selectedParty = null;
+        let totalVotes = 0;
+        let currentPartyIndex = 0;
+
+        // Initialize the application
+        function init() {
+            // Set up event listeners
+            verifyBtn.addEventListener('click', verifyID);
+            registerBtn.addEventListener('click', registerVoter);
+            selectPartyBtn.addEventListener('click', selectParty);
+            prevBtn.addEventListener('click', showPreviousParty);
+            nextBtn.addEventListener('click', showNextParty);
+            
+            // Language selector
+            langButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    langButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentLang = btn.dataset.lang;
+                    updateLanguage();
+                    renderCurrentParty();
+                });
+            });
+            
+            // Set up swipe gestures
+            setupSwipeGestures();
+            
+            // Render the first party
+            renderCurrentParty();
+            
+            // Set default email for demo
+            emailInput.value = 'pitsom144@gmail.com';
+        }
+
+        // Set up swipe gestures for mobile
+        function setupSwipeGestures() {
+            let startX = 0;
+            let endX = 0;
+            
+            swipeContainer.addEventListener('touchstart', (e) => {
+                startX = e.changedTouches[0].screenX;
+            });
+            
+            swipeContainer.addEventListener('touchend', (e) => {
+                endX = e.changedTouches[0].screenX;
+                handleSwipe();
+            });
+            
+            // Mouse events for desktop
+            swipeContainer.addEventListener('mousedown', (e) => {
+                startX = e.screenX;
+                swipeContainer.addEventListener('mousemove', handleMouseMove);
+                swipeContainer.addEventListener('mouseup', handleMouseUp);
+            });
+            
+            function handleMouseMove(e) {
+                endX = e.screenX;
+            }
+            
+            function handleMouseUp() {
+                handleSwipe();
+                swipeContainer.removeEventListener('mousemove', handleMouseMove);
+                swipeContainer.removeEventListener('mouseup', handleMouseUp);
+            }
+            
+            function handleSwipe() {
+                const diff = startX - endX;
+                if (Math.abs(diff) > 50) { // Minimum swipe distance
+                    if (diff > 0) {
+                        showNextParty();
+                    } else {
+                        showPreviousParty();
+                    }
+                }
+            }
+        }
+
+        // Verify South African ID
+        function verifyID() {
+            const idNumber = idNumberInput.value.trim();
+            
+            // Check if ID is exactly 13 digits
+            if (!/^\d{13}$/.test(idNumber)) {
+                showStatus(idStatus, 'idInvalid', 'error');
+                registerBtn.disabled = true;
+                return;
+            }
+            
+            // Extract birthdate from ID (first 6 digits: YYMMDD)
+            const year = parseInt(idNumber.substring(0, 2));
+            const month = parseInt(idNumber.substring(2, 4)) - 1; // Months are 0-indexed in JS
+            const day = parseInt(idNumber.substring(4, 6));
+            
+            // Determine century (00-21 is 2000-2021, 22-99 is 1922-1999)
+            const fullYear = (year <= 21) ? 2000 + year : 1900 + year;
+            
+            const birthDate = new Date(fullYear, month, day);
+            const today = new Date();
+            
+            // Calculate age
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDiff = today.getMonth() - birthDate.getMonth();
+            
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            
+            // Check if voter is 18 or older
+            if (age < 18) {
+                showStatus(idStatus, 'idUnderage', 'error');
+                registerBtn.disabled = true;
+            } else {
+                showStatus(idStatus, 'idValid', 'success');
+                registerBtn.disabled = false;
+            }
+        }
+
+        // Register voter and proceed to voting
+        function registerVoter() {
+            registrationSection.style.display = 'none';
+            votingSection.style.display = 'block';
+            resultsSection.style.display = 'block';
+        }
+
+        // Show the current party in the swipe interface
+        function renderCurrentParty() {
+            swipeContainer.innerHTML = '';
+            
+            const party = politicalParties[currentPartyIndex];
+            
+            const partyCard = document.createElement('div');
+            partyCard.className = 'party-card active';
+            
+            partyCard.innerHTML = `
+                <div class="party-number">${currentPartyIndex + 1}</div>
+                <div class="party-logo" style="background-color: ${party.color}">
+                    ${party.logo}
+                </div>
+                <h2 class="party-name">${party.name}</h2>
+                <p class="party-president">President: ${party.president}</p>
+                <p class="party-abbr">${party.abbreviation}</p>
+            `;
+            
+            swipeContainer.appendChild(partyCard);
+            
+            // Update progress
+            const t = translations[currentLang];
+            partyProgress.textContent = t.partyProgress
+                .replace('{current}', currentPartyIndex + 1)
+                .replace('{total}', politicalParties.length);
+            
+            // Update button states
+            prevBtn.disabled = currentPartyIndex === 0;
+            nextBtn.disabled = currentPartyIndex === politicalParties.length - 1;
+        }
+
+        // Show the previous party
+        function showPreviousParty() {
+            if (currentPartyIndex > 0) {
+                currentPartyIndex--;
+                renderCurrentParty();
+            }
+        }
+
+        // Show the next party
+        function showNextParty() {
+            if (currentPartyIndex < politicalParties.length - 1) {
+                currentPartyIndex++;
+                renderCurrentParty();
+            }
+        }
+
+        // Select the current party to vote for
+        function selectParty() {
+            selectedParty = politicalParties[currentPartyIndex];
+            
+            // Increment vote count
+            selectedParty.votes++;
+            totalVotes++;
+            
+            // Update results
+            renderResults();
+            
+            // Send vote to email (simulated)
+            sendVoteToEmail();
+            
+            // Show success message
+            alert(translations[currentLang].voteSuccess);
+            
+            // Reset for next voter (in a real system, this would be handled differently)
+            setTimeout(() => {
+                registrationSection.style.display = 'block';
+                votingSection.style.display = 'none';
+                currentPartyIndex = 0;
+                renderCurrentParty();
+                selectedParty = null;
+                
+                // Reset form
+                document.getElementById('fullName').value = '';
+                document.getElementById('idNumber').value = '';
+                document.getElementById('province').value = '';
+                idStatus.style.display = 'none';
+                registerBtn.disabled = true;
+            }, 3000);
+        }
+
+        // Render election results
+        function renderResults() {
+            resultsGrid.innerHTML = '';
+            
+            // Sort parties by votes (descending)
+            const sortedParties = [...politicalParties].sort((a, b) => b.votes - a.votes);
+            
+            // Only show parties with votes
+            const partiesWithVotes = sortedParties.filter(party => party.votes > 0);
+            
+            partiesWithVotes.forEach(party => {
+                const percentage = totalVotes > 0 ? (party.votes / totalVotes) * 100 : 0;
+                
+                const resultCard = document.createElement('div');
+                resultCard.className = 'result-card';
+                
+                resultCard.innerHTML = `
+                    <div class="result-logo" style="background-color: ${party.color}">
+                        ${party.logo}
+                    </div>
+                    <div class="result-info">
+                        <h3 class="result-name">${party.name}</h3>
+                        <p class="result-votes">${party.votes} votes (${percentage.toFixed(1)}%)</p>
+                        <div class="progress-bar">
+                            <div class="progress" style="width: ${percentage}%"></div>
+                        </div>
+                    </div>
+                `;
+                
+                resultsGrid.appendChild(resultCard);
+            });
+        }
+
+        // Send vote to email (simulated)
+        function sendVoteToEmail() {
+            const voterName = document.getElementById('fullName').value;
+            const voterEmail = document.getElementById('email').value;
+            const voterProvince = document.getElementById('province').value;
+            
+            // In a real implementation, this would send an actual email
+            console.log(`Vote recorded for ${selectedParty.name}`);
+            console.log(`Voter: ${voterName}`);
+            console.log(`Email: ${voterEmail}`);
+            console.log(`Province: ${voterProvince}`);
+            console.log(`Vote sent to: pitsom144@gmail.com`);
+            
+            alert(translations[currentLang].emailSent);
+        }
+
+        // Update language
+        function updateLanguage() {
+            const t = translations[currentLang];
+            
+            document.querySelector('.logo h1').textContent = t.title;
+            document.querySelector('.tagline').textContent = t.tagline;
+            document.querySelector('#registrationSection .section-title').innerHTML = `<i class="fas fa-user-check"></i> ${t.registration}`;
+            document.querySelector('label[for="fullName"]').textContent = t.fullName;
+            document.querySelector('label[for="idNumber"]').textContent = t.idNumber;
+            document.querySelector('label[for="province"]').textContent = t.province;
+            document.querySelector('label[for="email"]').textContent = t.email;
+            document.querySelector('#registerBtn').innerHTML = `<i class="fas fa-check-circle"></i> ${t.register}`;
+            document.querySelector('#verifyBtn').textContent = t.verify;
+            document.querySelector('#votingSection .section-title').innerHTML = `<i class="fas fa-ballot"></i> ${t.voting}`;
+            document.querySelector('#votingSection p').textContent = t.selectParty;
+            document.querySelector('#selectPartyBtn').innerHTML = `<i class="fas fa-check"></i> ${t.selectParty}`;
+            document.querySelector('#resultsSection .section-title').innerHTML = `<i class="fas fa-chart-bar"></i> ${t.results}`;
+            document.querySelector('#resultsSection p').textContent = t.currentResults;
+            document.querySelector('.contact-info h3').textContent = t.contact;
+            document.querySelector('.security-notice p').textContent = t.security;
+            document.querySelector('.copyright p').textContent = t.copyright;
+            
+            // Update progress text
+            partyProgress.textContent = t.partyProgress
+                .replace('{current}', currentPartyIndex + 1)
+                .replace('{total}', politicalParties.length);
+        }
+
+        // Show status message
+        function showStatus(element, messageKey, type) {
+            element.textContent = translations[currentLang][messageKey];
+            element.className = `status-message status-${type}`;
+            element.style.display = 'block';
+        }
+
+        // Initialize the app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
